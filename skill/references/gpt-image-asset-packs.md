@@ -4,11 +4,14 @@ Use this reference when a user wants GPT Image 2 / ChatGPT image generation to p
 
 ## Multi-image asset pack beats single contact sheet
 
-If ChatGPT can generate multiple images in one response, request separate images:
+If ChatGPT can generate multiple images in one response, request separate images. Do not stop at the first-frame prompt when the scene contains named people/targets; identity consistency needs independent reference images.
 
-1. Red-line first frame
+For close-interaction / character scenes, request:
+
+1. Numbered first frame
    - 16:9 scene from the intended starting viewpoint
-   - includes one continuous red route line and ordered stops
+   - uses small numbered stop markers near each main target
+   - no red line unless the user explicitly asks for a drawn route
 
 2. Character references
    - one image per main character/target
@@ -16,11 +19,21 @@ If ChatGPT can generate multiple images in one response, request separate images
    - no labels, no route marks, no text if the video model is sensitive to text
 
 3. Optional clean first frame
-   - same composition as the red-line frame
-   - removes route line, arrows, numbers, and labels
+   - same composition as the numbered first frame
+   - removes numbers, arrows, route marks, and labels
    - best used as the actual image-to-video first frame
 
-Video prompt rule: red-line marks are route-planning references only and must not appear in the final video.
+For world-route / path-control scenes, request:
+
+1. Red-line first frame or route-control map
+   - 16:9 route-planning image from the intended starting viewpoint or aerial map
+   - includes one continuous red route line and ordered route geometry
+
+2. Optional clean world/scene reference without the red line
+
+3. Optional landmark or character references if specific destinations need stable appearance
+
+Video prompt rule: numbered markers and red-line marks are route-planning references only and must not appear in the final video.
 
 ## Continuous-route wording
 
@@ -40,11 +53,17 @@ Adapt this for non-human POVs:
 
 ## Count-aware asset request pattern
 
-If the user specifies N people/targets, request exactly:
+If the user specifies N people/targets in a close-interaction or character scene, request exactly:
 
-- 1 red-line first-frame image containing exactly N main stops
+- 1 numbered first-frame image containing exactly N main stops
 - N character reference images
 - optionally 1 clean first-frame image
+
+If the user specifies N people/targets in a world-route/path-control scene, request exactly:
+
+- 1 red-line route-control image or route-planning map
+- N character/landmark references only when those targets must stay visually consistent
+- optionally 1 clean route/world reference without red line
 
 Include this line:
 

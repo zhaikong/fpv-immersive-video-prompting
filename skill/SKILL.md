@@ -41,7 +41,14 @@ Write the output as a small playable scene specification:
 
 ## Default Asset Workflow
 
-When the user needs GPT Image / GPT-Image-2 assets, request a multi-image asset pack rather than one crowded contact sheet.
+When the user needs GPT Image / GPT-Image-2 assets, request a multi-image asset pack rather than one crowded contact sheet. Treat requests for “生图 prompt”, “首帧图”, “参考图”, “素材包”, “用 GPT Image 生成”, or any image-prep step as an asset-pack request, not as a single first-frame prompt.
+
+For close-interaction scenes with N main people/targets, always output the complete asset pack unless the user explicitly asks for only one image:
+1. First-frame scene image with small numbered stop markers only: 1, 2, 3, ... N
+2. N separate character/reference images, one for each main person/target
+3. Optional clean first frame without numbers for safer image-to-video input
+
+Before returning any image prompt, run this count check: total images = 1 route/numbered first frame + N character references + optional 1 clean first frame. The video prompt must refer to these images by role, e.g. “图片 1 is route planning, 图片 2-4 are character references, 图片 5 is clean first frame.”
 
 Default image sets:
 
@@ -222,3 +229,5 @@ Read `references/session-patterns.md` for examples and session-specific lessons 
 Read `references/mayz-seedance-world-route-case.md` for the Seedance 2.0 red-line world-route pattern: aerial map control image, strict drawn route geometry, map-to-world flythrough, biome progression, speed-run/racing-line mode, and theme-park ride style journeys.
 
 Read `references/public-article-angle.md` when explaining this workflow publicly in a WeChat article, X thread, tutorial intro, or demo write-up. It captures the session framing: FPV prompts are action trajectories, not just visual descriptions; numbered stops vs red-line path control; space-first design; POV physics; count-duration tradeoffs.
+
+Read `references/cafe-cat-numbered-stops-case.md` when the user asks for cafe, cozy indoor, pet-cat POV, or low-angle numbered-stop interaction scenes. It captures a 15-second / 3-person cafe route pattern and the cat-specific movement constraints that prevent drone-like motion.
