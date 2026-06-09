@@ -1,139 +1,242 @@
-# FPV Immersive Video Prompting Skill
+<div align="center">
 
-> A route-first prompting skill for cinematic first-person AI video. It turns static scenes, character references, aerial maps, and drawn paths into physically coherent FPV video prompts for Seedance, Kling, Runway, Veo, and similar image-to-video models.
+# FPV 运镜导演.skill
 
-[中文说明](#中文) · [English](#english) · [Install](#install) · [Examples](#examples)
+> *把 AI 视频提示词，从“画面描述”升级成“行动轨迹设计”。*
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Standard-green)](https://agentskills.io)
+[![Runtime](https://img.shields.io/badge/Runtime-Hermes%20·%20Claude%20·%20Codex%20·%20Cursor-blueviolet)](#安装)
+[![AI Video](https://img.shields.io/badge/AI%20Video-Seedance%20·%20Kling%20·%20Runway%20·%20Veo-ff69b4)](#适合什么场景)
 
-## 中文
+<br>
 
-### 这是什么
+**一个专门为 FPV / image-to-video 设计的 AI 视频提示词 Skill。**
 
-`fpv-immersive-video-prompting` 是一个面向 AI 视频生成的 Hermes / Claude Skill。
+它不只帮你写“电影感、浅景深、光影高级”。
+它会先设计镜头是谁，从哪里出发，按什么顺序经过哪些人，怎么绕过障碍物，最后停在哪里。
 
-它解决的不是“画面怎么更漂亮”这个单点问题，而是 FPV 视频里更容易翻车的部分：行动轨迹。
+<br>
 
-在很多 image-to-video 场景里，提示词只写了风格、镜头感、人物和环境，但没有交代摄像机到底是谁、从哪里出发、先靠近谁、怎么穿过空间、每一段是否物理可达、最后停在哪里。结果视频模型会自己补运动，常见问题就是瞬移、跳切、穿墙、人物数量变化、编号残留、红线出现在成片里，或者 POV 身份前后漂移。
+[看效果](#效果示例) · [安装](#安装) · [它解决什么](#它解决什么) · [工作原理](#工作原理) · [资产包](#gpt-image-资产包) · [English](README_EN.md)
 
-这个 Skill 把 FPV 提示词当成一个小型可游玩的场景来设计。它会先确定空间路线，再安排人物和互动，最后输出可直接复制到视频模型里的中文提示词。
-
-### 适合什么场景
-
-- 室内、庭院、展厅、派对、宫殿等一镜到底 FPV 穿行
-- 多人物顺序互动，比如镜头依次经过 3 到 8 个角色
-- GPT Image / GPT-Image-2 首帧资产包设计
-- Seedance 2.0、Kling、Runway、Veo 这类 image-to-video 工作流
-- 航拍地图、红线路径控制、世界地图飞行、游戏世界穿越
-- 非人类 POV，比如猫、无人机、机器人吸尘器、鸟、幽灵、车辆、物体视角
-
-### 它的核心判断
-
-这个 Skill 有两个主要路线模式。
-
-**编号停靠点模式**
-
-适合近距离人物互动、室内空间、复杂家具、多人顺序出场。首帧里只放小编号 1、2、3，不画连续红线。最终视频提示词会要求模型按编号顺序移动，并明确数字只是路线参考，成片里不能出现。
-
-**红线路径控制模式**
-
-适合大场景和路线形态很强的画面，比如世界地图飞行、峡谷穿越、城市到地标、赛车线路、Seedance 2.0 路径控制演示。红线只作为摄像机路径控制，最终视频要完全移除红线、箭头、标注和地图 UI。
-
-### 为什么它有用
-
-一个好的 FPV 视频提示词不能只描述“看到什么”，还要描述“怎么经过”。
-
-这个 Skill 会把下面这些信息写清楚：
-
-- 摄像机是谁，是人、猫、无人机、机器人还是其他 POV
-- 从哪里开始，按什么顺序移动
-- exactly 有多少个主要人物或目标
-- 每个停靠点发生什么动作或反应
-- 路线是否能真实穿过空间
-- 哪些东西必须保持一致
-- 哪些东西绝对不能出现在最终画面里
-
-它的价值不在于保存一个万能提示词，而在于保存一套判断流程。面对不同场景，它会自动判断该用编号停靠点，还是红线路径控制；该写人类步行，还是无人机飞行；该让每个人都有动作，还是把多人压缩成区域和群组节奏。
+</div>
 
 ---
 
-## English
+## 效果示例
 
-### What this is
+### 咖啡厅猫咪视角
 
-`fpv-immersive-video-prompting` is a Hermes / Claude Skill for route-first AI video prompting.
+用户输入：
 
-It is designed for first-person, one-shot, image-to-video workflows where motion coherence matters as much as visual quality. Instead of writing only about style, lighting, characters, and atmosphere, the skill treats an FPV video as a small playable scene with a start point, ordered stops, physically reachable movement, identity-aware POV constraints, timed interactions, and explicit negative constraints.
+```text
+帮我做一个咖啡厅里 3 个人依次互动的 FPV 视频提示词，15 秒，猫咪视角
+```
 
-The result is a copy-ready prompt that helps video models understand how the camera should move through the scene.
+Skill 会先判断这不是红线路径场景，而是近距离人物互动。它会生成一套完整资产包，而不是只给一张首帧图。
 
-### What it is good for
+```text
+图片 1：咖啡厅猫咪低机位首帧，带 1、2、3 小编号停靠点
+图片 2：靠窗女生独立人物参考图
+图片 3：吧台咖啡师独立人物参考图
+图片 4：角落圆桌男生独立人物参考图
+图片 5：干净版首帧，去掉编号，用作真正视频首帧
+```
 
-- Cinematic one-shot FPV walkthroughs
-- Indoor scenes with multiple characters and ordered interactions
-- GPT Image / GPT-Image-2 first-frame asset packs
-- Seedance, Kling, Runway, Veo, and similar image-to-video models
-- Red-line route-control images for world-scale flythroughs
-- Fantasy maps, city routes, racing lines, canyon flights, and game-world traversal
-- Non-human POVs such as drones, cats, robot vacuums, birds, spirits, vehicles, and object cameras
+然后输出视频 prompt：
 
-### Core idea
+```text
+观众是一只在咖啡厅里自由走动的猫咪，镜头保持接近地面的低机位，
+从咖啡厅入口旁的地垫开始，严格按编号顺序移动：
+入口地垫 → 1 靠窗座位的女生 → 2 吧台前的咖啡师 → 3 角落圆桌旁的男生 → 窗边阳光下停住。
 
-Most failed FPV generations do not fail because the prompt lacks adjectives. They fail because the camera path is under-specified.
+全片包含 exactly 3 个主要人物，不要增加或减少主目标。
+镜头运动必须符合猫咪的身体限制，能看到桌腿、椅腿、地面纹理、人的鞋子，
+可以短暂停顿、好奇转头、绕开障碍物，但不能飞，不能跳上吧台，不能穿过桌椅和人腿。
+```
 
-This skill asks route-level questions before writing the final prompt:
-
-- Who or what is the camera?
-- Where does it start?
-- How many main targets exist, exactly?
-- What order should the camera visit them in?
-- Can each movement segment physically happen?
-- What should happen at each stop?
-- Which visual identities must remain stable?
-- What should never appear in the final video?
-
-### Two route-control modes
-
-**Numbered stop markers**
-
-Best for close character interactions, interiors, social scenes, and exact target-count workflows. The first frame uses small numbered markers near each target instead of a continuous path line. The final video prompt makes it clear that the numbers are only planning references and must not appear in the generated video.
-
-**Red-line path control**
-
-Best for large-scale routes such as aerial maps, fantasy continents, city-to-landmark flythroughs, racing lines, and Seedance-style path-control demos. The red line is treated as camera-path geometry, not final visual content. The final prompt explicitly removes all red lines, arrows, annotations, labels, and map-view artifacts.
+这类提示词的重点不是“咖啡厅很漂亮”，而是让视频模型知道猫到底怎么走。
 
 ---
 
-## Install
+### 世界地图飞行
 
-### Option 1. Install as a Hermes skill
+用户输入：
 
-Clone the repository into your Hermes skills directory:
+```text
+我想做一个 Seedance 2.0 的世界地图飞行，从雪原穿过峡谷、王城，最后到火山。
+```
+
+Skill 会切换到红线路径控制模式。
+
+```text
+图片 1：16:9 奇幻大陆航拍路线规划图，一条连续红线从雪原出发，经过峡谷和王城，抵达火山口
+图片 2：可选干净世界参考图，去掉红线
+```
+
+视频 prompt 会明确说明：
+
+```text
+红色路线只作为摄像机路径控制，不是最终画面内容。
+最终视频不要出现红线、箭头、地图标注、文字标签、UI 或俯视地图感。
+镜头必须严格沿红线几何飞行，有自然 banking、贴近地形掠过、穿越地标时的前景视差和稳定地平线。
+```
+
+同样是 FPV，一个是猫在咖啡厅里走，一个是无人机穿越大陆。两种场景不能用同一套提示词。
+
+---
+
+## 它解决什么
+
+很多 AI 视频 prompt 看起来很完整，实际一生成就翻车。
+
+常见问题是：
+
+- 镜头突然瞬移，空间断了
+- 人物数量一会儿多一会儿少
+- 首帧里的编号、红线、箭头残留在成片里
+- 说是猫咪视角，结果变成无人机视角
+- 说是一镜到底，结果中间跳切
+- 室内路线穿过桌子、椅子、墙和人腿
+- 多人物互动里，角色脸和衣服互相漂移
+
+原因通常不是缺少风格词，而是缺少行动轨迹。
+
+FPV 视频要写清楚的不是一张图，而是一段运动：谁在看，怎么走，经过谁，在哪里停，什么东西不能变。
+
+---
+
+## 适合什么场景
+
+- 咖啡厅、客厅、展厅、庭院、宫殿等室内一镜到底
+- 3 到 8 个角色依次互动的短视频
+- 猫、狗、机器人吸尘器、无人机、鸟、幽灵、车辆等非人类 POV
+- GPT Image / GPT-Image-2 首帧和人物参考图资产包
+- Seedance、Kling、Runway、Veo 等 image-to-video 工作流
+- 红线路径控制、世界地图飞行、城市到地标、峡谷穿越、赛车线路
+- 想把提示词从“视觉描述”变成“镜头调度”的创作者
+
+---
+
+## 工作原理
+
+这个 Skill 会把一个 FPV 视频拆成 8 个问题。
+
+```text
+1. 摄像机是谁
+2. 从哪里开始
+3. exactly 有多少个主要人物或目标
+4. 按什么顺序经过它们
+5. 每一段路线是否物理可达
+6. 每个停靠点发生什么互动
+7. 哪些身份、服装、位置必须保持一致
+8. 哪些东西绝对不能出现在最终画面里
+```
+
+然后它会选择两种路线模式之一。
+
+### 编号停靠点
+
+适合近距离人物互动、室内空间、咖啡厅、客厅、派对、展厅。
+
+这类场景里不要默认画红线。红线很容易穿过桌椅、墙面和人腿，也容易残留在视频里。
+
+更稳定的做法是，在首帧里放小编号 1、2、3，把角色顺序标清楚。真正的移动路线交给视频 prompt 约束。
+
+### 红线路径控制
+
+适合大世界路线、航拍地图、城市飞行、峡谷穿越、赛车线路、Seedance 2.0 path control。
+
+这类场景的核心是路线几何。红线可以作为路径控制，但最终视频里必须完全消失。
+
+---
+
+## GPT Image 资产包
+
+如果场景里有 N 个主要人物，Skill 默认生成完整资产包。
+
+```text
+1 张带编号首帧图
+N 张人物独立参考图
+1 张可选干净首帧图
+```
+
+以 3 人咖啡厅为例：
+
+```text
+图片 1：咖啡厅猫咪视角首帧，带编号 1、2、3
+图片 2：靠窗女生参考图
+图片 3：咖啡师参考图
+图片 4：角落男生参考图
+图片 5：干净版首帧，去掉编号和所有标记
+```
+
+这样做的目的很简单：首帧管空间，人物参考管身份，干净首帧管最终输入。
+
+如果只给一张图，视频模型很容易把路线、角色和画面标记混在一起。
+
+---
+
+## 安装
+
+### 方式一：安装到 Hermes
 
 ```bash
 git clone https://github.com/zhouwei713/fpv-immersive-video-prompting.git \
   ~/.hermes/skills/creative/fpv-immersive-video-prompting
 ```
 
-Then restart Hermes or reload your agent session. The skill will be available as:
+重启 Hermes，或开启新会话后即可使用：
 
 ```text
 fpv-immersive-video-prompting
 ```
 
-### Option 2. Use the skill content manually
+### 方式二：作为通用 Skill 使用
 
-If you are not using Hermes, open `SKILL.md` and use it as a structured prompt guide inside Claude, ChatGPT, or your preferred agent environment.
+如果你不使用 Hermes，也可以直接把 `SKILL.md` 放进 Claude、Codex、Cursor、OpenCode 或其他支持 Skill / long prompt 的 Agent 环境里。
 
-For best results, also read the reference files under `skill/references/` when working with red-line routes, GPT Image asset packs, or public tutorial writing.
+### 方式三：只当提示词方法论参考
+
+直接阅读：
+
+```text
+SKILL.md
+skill/references/gpt-image-asset-packs.md
+skill/references/session-patterns.md
+```
 
 ---
 
-## Repository structure
+## 使用方式
+
+你可以这样说：
+
+```text
+帮我做一个咖啡厅里 3 个人依次互动的 FPV 视频提示词，15 秒，猫咪视角
+```
+
+```text
+做一个宫殿庭院 FPV，一镜到底经过 5 个角色，最后到池塘边
+```
+
+```text
+我有一张世界地图，想让镜头沿红线从雪原飞到火山，帮我写 Seedance 2.0 prompt
+```
+
+```text
+给我一套 GPT Image 生图 prompt，要包含首帧图、人物参考图和干净版首帧
+```
+
+---
+
+## 仓库结构
 
 ```text
 .
 ├── README.md
+├── README_EN.md
 ├── SKILL.md
 ├── skill/
 │   ├── SKILL.md
@@ -149,65 +252,23 @@ For best results, also read the reference files under `skill/references/` when w
 └── LICENSE
 ```
 
-`SKILL.md` is duplicated at the repository root for quick reading. The installable skill package lives under `skill/`.
+---
+
+## 设计理念
+
+FPV 提示词不是把一张图说得更美。
+
+它更像在设计一个小关卡：入口在哪里，路线怎么走，角色站在哪里，镜头能不能绕过去，最后有没有一个让观众理解空间的停顿。
+
+只要运动没设计清楚，模型就会替你设计。它设计出来的结果，通常就是瞬移、穿墙、换脸和跳切。
+
+这个 Skill 的价值，是把这套判断流程固定下来，让每次生成 FPV 视频前都先过一遍空间、路线、角色和物理限制。
 
 ---
 
-## Examples
+## English
 
-### Example 1. Numbered stop markers for an indoor FPV scene
-
-User request:
-
-```text
-帮我做一个现代客厅里 5 个人依次互动的 FPV 视频提示词，15 秒，像客人走进房间一样。
-```
-
-The skill will route this to numbered stop markers rather than a red line, because the scene depends on close character interaction and furniture-aware movement.
-
-Output direction:
-
-```text
-使用上传图片作为首帧、编号路线参考和 5 个角色外观参考，生成一段 16:9、15 秒、一镜到底的现代客厅客人视角 FPV 视频。首帧中的编号 1 到 5 只作为镜头停靠顺序参考，不要出现在最终画面里。
-
-观众是一位刚进入房间的客人，从客厅入口出发，按编号顺序移动到沙发、落地窗、茶几、开放式吧台和阳台门口。全片包含 exactly 5 个主要人物，不要增加或减少主目标。镜头保持人类眼平高度，有轻微步行摆动、自然减速和短暂停留，不能穿过沙发、茶几、墙面或人物身体。
-```
-
-### Example 2. Red-line path control for a world-scale flythrough
-
-User request:
-
-```text
-我想做一个 Seedance 2.0 的世界地图飞行，从雪原穿过峡谷、王城，最后到火山。
-```
-
-The skill will use red-line path control, because this is a large-scale route-shaped scene.
-
-Output direction:
-
-```text
-使用上传图片作为路线规划图。图中的红色路线只作为摄像机路径控制，不是最终画面内容。生成一段 16:9、12 秒、一镜到底的无人机 FPV 飞行视频，镜头必须严格沿红线几何从雪原出发，穿过峡谷和王城上空，最后抵达火山口。
-
-最终视频不要出现红线、箭头、地图标注、文字标签、UI 或俯视地图感。镜头要有连续前进、自然倾斜、贴近地形掠过、逐步加速、穿越地标时的前景视差和稳定地平线。
-```
-
----
-
-## Reference files
-
-- `skill/references/session-patterns.md` records the original workflow patterns and edge cases.
-- `skill/references/gpt-image-asset-packs.md` explains how to request first-frame and character-reference image packs.
-- `skill/references/mayz-seedance-world-route-case.md` documents Seedance-style world-route control.
-- `skill/references/liyue-ai-redline-fpv-case.md` documents a red-line FPV route case.
-- `skill/references/public-article-angle.md` captures the public-facing explanation of action trajectory prompting.
-
----
-
-## Design philosophy
-
-A strong FPV prompt is closer to level design than image description.
-
-It should make the model understand where the camera can go, what it is allowed to be, what it should notice, and what continuity must survive from frame to frame. This skill makes that design process explicit, repeatable, and easier to reuse.
+For English documentation, see [README_EN.md](README_EN.md).
 
 ---
 
