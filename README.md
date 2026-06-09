@@ -111,7 +111,7 @@ Best for large-scale routes such as aerial maps, fantasy continents, city-to-lan
 Clone the repository into your Hermes skills directory:
 
 ```bash
-git clone https://github.com/zhouluobo/fpv-immersive-video-prompting.git \
+git clone https://github.com/zhouwei713/fpv-immersive-video-prompting.git \
   ~/.hermes/skills/creative/fpv-immersive-video-prompting
 ```
 
