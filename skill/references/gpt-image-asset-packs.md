@@ -4,6 +4,8 @@ Use this reference when a user wants GPT Image 2 / ChatGPT image generation to p
 
 ## Multi-image asset pack beats single contact sheet
 
+For ChatGPT / GPT Image workflows, deliver one batch-generation prompt that asks the model to generate multiple separate images in a single response. Do not deliver many independent prompts unless the user explicitly asks for per-image prompts. The prompt should still request separate images, not one crowded contact sheet.
+
 If ChatGPT can generate multiple images in one response, request separate images. Do not stop at the first-frame prompt when the scene contains named people/targets; identity consistency needs independent reference images.
 
 For close-interaction / character scenes, request:

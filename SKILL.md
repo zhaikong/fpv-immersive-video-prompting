@@ -43,6 +43,8 @@ Write the output as a small playable scene specification:
 
 When the user needs GPT Image / GPT-Image-2 assets, request a multi-image asset pack rather than one crowded contact sheet. Treat requests for “生图 prompt”, “首帧图”, “参考图”, “素材包”, “用 GPT Image 生成”, or any image-prep step as an asset-pack request, not as a single first-frame prompt.
 
+For any case that needs multiple images, output one batch-generation prompt that asks GPT Image / ChatGPT to generate multiple separate images in a single response. Do not split the asset pack into many independent per-image prompts unless the user explicitly asks for that. The prompt must say: “请一次性生成 [X] 张独立图片，不要生成拼图、九宫格、contact sheet 或一张图里塞多个画面。”
+
 For close-interaction scenes with N main people/targets, always output the complete asset pack unless the user explicitly asks for only one image:
 1. First-frame scene image with small numbered stop markers only: 1, 2, 3, ... N
 2. N separate character/reference images, one for each main person/target
